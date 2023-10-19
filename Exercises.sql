@@ -1,24 +1,27 @@
 --Question 1
-SELECT customer_id, first_name, last_name, district 
+SELECT  first_name, last_name, district 
 FROM customer c 
-LEFT JOIN address a 
-ON a.district LIKE 'Texas';
+JOIN address a 
+ON a.address_id  = c.address_id 
+WHERE district = 'Texas'
+;
 
 --Question 2
 SELECT first_name, last_name, amount
 FROM customer c
 JOIN payment p 
-ON amount >7;
+ON c.customer_id = p.customer_id 
+WHERE amount>7;
 
---Question 3 *INCOMPLETE*
-SELECT first_name, last_name, sum(amount) AS total_payments
+--Question 3 
+SELECT first_name, last_name
 FROM customer c 
-JOIN payment p 
-ON c.customer_id = p.customer_id
-HAVING (
-	SELECT total_payments
-	FROM payment 
-	WHERE payment.total_payments>175)
+WHERE customer_id IN (
+	SELECT customer_id
+	FROM payment p 
+	GROUP BY customer_id
+	HAVING sum(amount)>=175
+	ORDER BY customer_id);
 
 
 
@@ -52,16 +55,16 @@ GROUP BY f.title
 ORDER BY count(a.actor_id) DESC;
 
 --Question 7 *INCOMPLETE*
-SELECT a.actor_id, a.first_name, a.last_name, count(f.film_id)
+SELECT first_name, last_name, count(film_id)
 FROM actor a 
 JOIN film_actor fa 
 ON a.actor_id = fa.actor_id 
-JOIN film f
-ON fa.film_id = f.film_id 
-ORDER BY count(f.film_id);
+GROUP BY a.actor_id 
+ORDER BY count(fa.film_id)
+;
 
 --Question 8
-SELECT country 
+SELECT country, count(city_id)
 FROM country c 
 JOIN city c2 
 ON c.country_id = c2.country_id 
@@ -69,11 +72,10 @@ GROUP BY country
 ORDER BY count(city_id) DESC 
 ;
 
---Question 9 *INCOMPLETE*
+--Question 9 
 SELECT a.first_name, a.last_name
 FROM actor a 
 JOIN film_actor fa 
 ON a.actor_id = fa.actor_id 
-JOIN film f 
-ON fa.film_id = f.film_id 
-HAVING count(f.film_id) BETWEEN 20 AND 25
+GROUP BY a.actor_id 
+HAVING count(fa.film_id) BETWEEN 20 AND 25
